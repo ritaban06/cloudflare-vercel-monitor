@@ -53,11 +53,5 @@
     "@types/vscode": "^1.98.0",
     "@types/node": "20.x",
     "@vscode/test-cli": "^0.0.10"
-  },
-  "files": [
-  "media/**",
-  "extension.js",
-  "package.json"
-]
-
+  }
 }

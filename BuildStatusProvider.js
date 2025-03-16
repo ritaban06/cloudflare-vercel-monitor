@@ -2,26 +2,110 @@ const vscode = require("vscode");
 const axios = require("axios");
 
 class BuildStatusProvider {
-    constructor(treeProvider) {
+    constructor(context, treeProvider) {
+        this.context = context; // ✅ Ensure context is stored
         this.treeProvider = treeProvider;
         this.panel = null;
     }
-
+    async getApiToken(platform) {
+        let token = this.context.globalState.get(`${platform}_token`);
+        if (!token) {
+            token = await vscode.window.showInputBox({
+                prompt: `Enter your ${platform} API Token`,
+                ignoreFocusOut: true,
+                password: true
+            });
+            if (token) {
+                await this.context.globalState.update(`${platform}_token`, token);
+            }
+        }
+        return token;
+    }
+    
+    async getAccountId() {
+        let accountId = this.context.globalState.get("cloudflare_account_id");
+        if (!accountId) {
+            accountId = await vscode.window.showInputBox({
+                prompt: "Enter your Cloudflare Account ID",
+                ignoreFocusOut: true
+            });
+            if (accountId) {
+                await this.context.globalState.update("cloudflare_account_id", accountId);
+            }
+        }
+        return accountId;
+    }
+    
     async fetchBuildStatus() {
         try {
-            // Fetching build status from Cloudflare & Vercel APIs (Replace with actual API calls)
-            console.log("📡 Fetching latest build status...");
-            const projects = [
-                { name: "Project 1", status: "success" },
-                { name: "Project 2", status: "failed" },
-                { name: "Project 3", status: "building" }
-            ];
+            console.log("📡 Fetching latest build status from APIs...");
+    
+            // Replace these with your actual API keys and account details
+            const CLOUDFLARE_API_TOKEN = await this.getApiToken("Cloudflare");
+            const CLOUDFLARE_ACCOUNT_ID = await this.getAccountId();
+            const VERCEL_API_TOKEN = await this.getApiToken("Vercel");
+    
+            if (!CLOUDFLARE_API_TOKEN || !CLOUDFLARE_ACCOUNT_ID || !VERCEL_API_TOKEN) {
+                console.error("❌ API tokens missing. Cannot fetch data.");
+                return [];
+            }
+    
+            // Fetch Cloudflare projects
+            const cloudflareProjectsUrl = `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects`;
+            const cloudflareResponse = await axios.get(cloudflareProjectsUrl, {
+                headers: { Authorization: `Bearer ${CLOUDFLARE_API_TOKEN}` }
+            });
+    
+            let projects = [];
+    
+            if (cloudflareResponse.data && cloudflareResponse.data.result) {
+                for (const project of cloudflareResponse.data.result) {
+                    const deploymentsUrl = `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project.name}/deployments`;
+                    const deploymentsResponse = await axios.get(deploymentsUrl, {
+                        headers: { Authorization: `Bearer ${CLOUDFLARE_API_TOKEN}` }
+                    });
+    
+                    if (deploymentsResponse.data && deploymentsResponse.data.result.length > 0) {
+                        const latestDeployment = deploymentsResponse.data.result[0];
+                        projects.push({
+                            name: project.name,
+                            status: latestDeployment.latest_stage.status || "unknown"
+                        });
+                    }
+                }
+            }
+    
+            // Fetch Vercel projects
+            const vercelProjectsUrl = "https://api.vercel.com/v9/projects";
+            const vercelResponse = await axios.get(vercelProjectsUrl, {
+                headers: { Authorization: `Bearer ${VERCEL_API_TOKEN}` }
+            });
+    
+            if (vercelResponse.data && vercelResponse.data.projects) {
+                for (const project of vercelResponse.data.projects) {
+                    const deploymentsUrl = `https://api.vercel.com/v6/deployments?projectId=${project.id}`;
+                    const deploymentsResponse = await axios.get(deploymentsUrl, {
+                        headers: { Authorization: `Bearer ${VERCEL_API_TOKEN}` }
+                    });
+    
+                    if (deploymentsResponse.data && deploymentsResponse.data.deployments.length > 0) {
+                        const latestDeployment = deploymentsResponse.data.deployments[0];
+                        projects.push({
+                            name: project.name,
+                            status: latestDeployment.state || "unknown"
+                        });
+                    }
+                }
+            }
+    
+            console.log("✅ Build Status Data Fetched:", projects);
             return projects;
         } catch (error) {
             console.error("❌ Error fetching build status:", error);
             return [];
         }
     }
+    
 
     async updateSidebar() {
         const projects = await this.fetchBuildStatus();

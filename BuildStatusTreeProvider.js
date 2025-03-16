@@ -4,14 +4,14 @@ class BuildStatusTreeProvider {
     constructor() {
         this._onDidChangeTreeData = new vscode.EventEmitter();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
-        this.buildStatus = [{ label: "Fetching build status...", description: "" }];
+        this.buildStatus = [];
     }
 
     updateTreeView(projects) {
-        this.buildStatus = projects.map(project => ({
-            label: `${project.name} - ${project.status.toUpperCase()}`,
-            description: project.status
-        }));
+        this.buildStatus = projects.map(project => new vscode.TreeItem(
+            `${project.name} - ${project.status.toUpperCase()}`,
+            vscode.TreeItemCollapsibleState.None
+        ));
         this.refresh();
     }
 
@@ -21,12 +21,14 @@ class BuildStatusTreeProvider {
     }
 
     getTreeItem(element) {
-        return new vscode.TreeItem(element.label);
+        return element;
     }
 
     getChildren() {
         console.log("📡 Fetching build status for tree view...");
-        return this.buildStatus;
+        return this.buildStatus.length > 0
+            ? this.buildStatus
+            : [new vscode.TreeItem("No projects found")];
     }
 }
 

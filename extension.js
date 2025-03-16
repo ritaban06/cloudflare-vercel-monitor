@@ -11,15 +11,16 @@ function activate(context) {
     console.log("⚡ Extension activated! (Check Log: Extension Host)");
     outputChannel.show(true);
 
-    // Initialize the Tree View
     const treeProvider = new BuildStatusTreeProvider();
     vscode.window.registerTreeDataProvider("buildStatusView", treeProvider);
-    
+
     console.log("✅ Tree Provider Initialized!");
     outputChannel.appendLine("✅ Tree Provider Initialized!");
 
-    // Initialize the Webview Panel & API Data Fetching
-    const buildStatusProvider = new BuildStatusProvider(treeProvider);
+    const buildStatusProvider = new BuildStatusProvider(context, treeProvider);
+
+    // Auto-fetch build status on activation
+    buildStatusProvider.updateSidebar();
 
     // Register Refresh Command
     let refreshCommand = vscode.commands.registerCommand("extension.refreshBuildStatus", async () => {

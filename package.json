@@ -14,14 +14,16 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["onStartupFinished"],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
+  "commands": [
+    {
       "command": "extension.checkBuildStatus",
       "title": "Check Build Status"
-    }]
-  },
+    }
+  ]
+},
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",

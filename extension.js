@@ -1,6 +1,9 @@
 const vscode = require('vscode');
 const axios = require('axios');
 
+/**
+ * Handles API requests and build status updates.
+ */
 class BuildStatusProvider {
     constructor(context) {
         this.context = context;
@@ -78,26 +81,42 @@ class BuildStatusProvider {
     }
 
     async updateSidebar() {
-        const cloudflareToken = await this.getApiToken('Cloudflare');
-        const vercelToken = await this.getApiToken('Vercel');
+        console.log("📡 Fetching build status...");
+        this.treeProvider.buildStatus = [{ label: "Fetching latest status...", description: "" }];
+        this.treeProvider.refresh(); // ✅ Refresh before fetching
+    
+        const cloudflareToken = await this.getApiToken("Cloudflare");
+        const vercelToken = await this.getApiToken("Vercel");
         const accountId = await this.getAccountId();
-
+    
         let allStatuses = [];
-
+    
         if (cloudflareToken && accountId) {
             const cloudflareProjectsApi = `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects`;
-            const cloudflareStatuses = await this.fetchBuildStatus(cloudflareProjectsApi, cloudflareToken, 'Cloudflare', accountId);
+            const cloudflareStatuses = await this.fetchBuildStatus(cloudflareProjectsApi, cloudflareToken, "Cloudflare", accountId);
             allStatuses = [...allStatuses, ...cloudflareStatuses];
         }
-
+    
         if (vercelToken) {
-            const vercelProjectsApi = 'https://api.vercel.com/v9/projects';
-            const vercelStatuses = await this.fetchBuildStatus(vercelProjectsApi, vercelToken, 'Vercel', null);
+            const vercelProjectsApi = "https://api.vercel.com/v9/projects";
+            const vercelStatuses = await this.fetchBuildStatus(vercelProjectsApi, vercelToken, "Vercel", null);
             allStatuses = [...allStatuses, ...vercelStatuses];
         }
-
-        this.renderSidebar(allStatuses);
+    
+        if (allStatuses.length === 0) {
+            this.treeProvider.buildStatus = [{ label: "No projects found", description: "" }];
+        } else {
+            this.treeProvider.buildStatus = allStatuses.map(project => ({
+                label: `${project.name}: ${project.status.toUpperCase()}`,
+                description: ""
+            }));
+        }
+    
+        console.log("✅ Updated tree data:", this.treeProvider.buildStatus);
+        this.treeProvider.refresh(); // ✅ Refresh after fetching
     }
+        
+    
 
     renderSidebar(projects) {
         if (!this.panel) {
@@ -150,18 +169,64 @@ class BuildStatusProvider {
     }
 }
 
-function activate(context) {
-    let provider = new BuildStatusProvider(context);
+/**
+ * Handles the sidebar tree view in VS Code.
+ */
+class BuildStatusTreeProvider {
+    constructor(context) {
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+        this.buildStatus = [{ label: "Fetching build status...", description: "" }];
+    }
 
-    let sidebarCommand = vscode.commands.registerCommand('extension.openBuildStatus', () => {
-        provider.updateSidebar();
-    });
+    refresh() {
+        console.log("🔄 Refreshing tree view...");
+        this._onDidChangeTreeData.fire();
+    }
 
-    context.subscriptions.push(sidebarCommand);
+    getTreeItem(element) {
+        return element;
+    }
 
-    setInterval(() => provider.updateSidebar(), 120000); // Refresh every 2 minutes
+    getChildren() {
+        console.log("📡 Fetching build status for tree view...");
+        return this.buildStatus.map(status => new vscode.TreeItem(status.label));
+    }
 }
 
+/**
+ * Extension activation function.
+ */
+function activate(context) {
+    const outputChannel = vscode.window.createOutputChannel("Cloudflare Vercel Monitor");
+    outputChannel.appendLine("⚡ Extension Activated!");
+
+    console.log("⚡ Extension activated! (Check Log: Extension Host)");
+    outputChannel.show(true); // Force output panel to open
+
+    const treeProvider = new BuildStatusTreeProvider(context);
+    vscode.window.registerTreeDataProvider("buildStatusView", treeProvider);
+
+    const provider = new BuildStatusProvider(context, treeProvider);
+
+    // ✅ Call updateSidebar() on activation
+    provider.updateSidebar(); 
+
+    let refreshCommand = vscode.commands.registerCommand("extension.refreshBuildStatus", async () => {
+        vscode.window.showInformationMessage("🔄 Refresh command triggered!");
+        console.log("🔄 Refresh command triggered...");
+        outputChannel.appendLine("🔄 Refresh command triggered...");
+        await provider.updateSidebar();
+        treeProvider.refresh();
+    });
+
+    context.subscriptions.push(refreshCommand);
+}
+
+
+/**
+ * Extension deactivation function.
+ */
 function deactivate() {}
 
 module.exports = { activate, deactivate };

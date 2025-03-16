@@ -16,13 +16,31 @@
   ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [
+  "viewsContainers": {
+    "activitybar": [
       {
-        "command": "extension.openBuildStatus",
-        "title": "Open Cloudflare & Vercel Status"
+        "id": "buildStatus",
+        "title": "Build Status",
+        "icon": "media/logs.svg"
       }
     ]
   },
+  "views": {
+    "buildStatus": [
+      {
+        "id": "buildStatusView",
+        "name": "Cloudflare & Vercel Builds",
+        "icon": "media/logs.svg"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "command": "extension.openBuildStatus",
+      "title": "Refresh Build Status"
+    }
+  ]
+},
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
@@ -35,5 +53,11 @@
     "@types/vscode": "^1.98.0",
     "@types/node": "20.x",
     "@vscode/test-cli": "^0.0.10"
-  }
+  },
+  "files": [
+  "media/**",
+  "extension.js",
+  "package.json"
+]
+
 }

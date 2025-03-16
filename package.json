@@ -1,0 +1,38 @@
+{
+  "name": "cloudflare-vercel-monitor",
+  "displayName": "Cloudflare Vercel Monitor",
+  "publisher": "RitabanGhosh",
+  "description": "Monitor Cloudflare Pages and Vercel build status inside VS Code.",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.98.0"
+  },
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/ritaban06/cloudflare-vercel-monitor.git"
+},
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [{
+      "command": "extension.checkBuildStatus",
+      "title": "Check Build Status"
+    }]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "dependencies": {
+    "axios": "^1.5.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.98.0",
+    "@types/node": "20.x",
+    "@vscode/test-cli": "^0.0.10"
+  }
+}

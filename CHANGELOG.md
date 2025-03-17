@@ -114,7 +114,7 @@
 2️⃣ Install with:  
    ```sh
    code --install-extension cloudflare-vercel-monitor-1.0.2.vsix
-
+   ```
 
 ## **[1.1.0] - Added "Clear API Tokens" Command 🚀**  
 

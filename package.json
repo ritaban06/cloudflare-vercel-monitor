@@ -4,7 +4,7 @@
   "publisher": "RitabanGhosh",
   "icon": "icon.png",
   "description": "Monitor Cloudflare Pages and Vercel build status inside VS Code.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.98.0"
   },
@@ -35,11 +35,15 @@
       ]
     },
     "commands": [
-      {
-        "command": "extension.openBuildStatus",
-        "title": "Refresh Build Status"
-      }
-    ]
+    {
+      "command": "extension.refreshBuildStatus",
+      "title": "Refresh Build Status"
+    },
+    {
+      "command": "extension.clearTokens",
+      "title": "Clear API Tokens"
+    }
+  ]
   },
 "main": "./dist/extension.js",
 "scripts": {

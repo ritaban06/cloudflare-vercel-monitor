@@ -113,4 +113,4 @@
 1️⃣ Run `npm run build && vsce package`  
 2️⃣ Install with:  
    ```sh
-   code --install-extension cloudflare-vercel-monitor-1.0.3.vsix
+   code --install-extension cloudflare-vercel-monitor-1.0.2.vsix

@@ -4,7 +4,7 @@
   "publisher": "RitabanGhosh",
   "icon": "icon.png",
   "description": "Monitor Cloudflare Pages and Vercel build status inside VS Code.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.98.0"
   },

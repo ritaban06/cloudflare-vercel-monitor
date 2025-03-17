@@ -1,0 +1,19 @@
+name: Sync to Azure DevOps
+on:
+  push:
+    branches:
+      - main  # Change if needed
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v3
+
+      - name: Push to Azure DevOps
+        run: |
+          git config --global user.email "ghoshritaban2006@gmail.com"
+          git config --global user.name "Ritaban Ghosh"
+          git remote add azure https://dev.azure.com/vscode-ritaban/cloudflare-vercel-monitor/_git/cloudflare-vercel-monitor
+          git push --mirror azure

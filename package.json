@@ -2,6 +2,7 @@
   "name": "cloudflare-vercel-monitor",
   "displayName": "Cloudflare Vercel Monitor",
   "publisher": "RitabanGhosh",
+  "icon": "icon.png",
   "description": "Monitor Cloudflare Pages and Vercel build status inside VS Code.",
   "version": "1.0.0",
   "engines": {

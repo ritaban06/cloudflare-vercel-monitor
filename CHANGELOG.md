@@ -114,3 +114,30 @@
 2️⃣ Install with:  
    ```sh
    code --install-extension cloudflare-vercel-monitor-1.0.2.vsix
+
+
+## **[1.1.0] - Added "Clear API Tokens" Command 🚀**  
+
+### ✨ **New Features**  
+- **🗑️ Added "Clear API Tokens" Command**  
+  - Now you can clear your stored **Cloudflare & Vercel API tokens** directly from VS Code.  
+  - Run **`Ctrl + Shift + P` → "Clear API Tokens"`** to remove stored credentials.  
+  - You will be prompted to enter new tokens when needed.  
+
+### 🐛 **Bug Fixes & Improvements**  
+- **Fixed command registration issues** ensuring `"Clear API Tokens"` appears in the Command Palette.  
+- **Improved logging** in the Output Panel (`View → Output → Cloudflare Vercel Monitor`).  
+- **Ensured proper Webpack bundling** so all dependencies (like `axios`) are correctly included.  
+
+---
+
+## **[Upcoming Features]**  
+✅ **Build Status Notifications**  
+✅ **Customizable API Polling Interval**  
+✅ **Support for More Deployment Platforms (Netlify, GitHub Actions, etc.)**  
+
+🚀 **How to Update**  
+1️⃣ Run `npm run build && vsce package`  
+2️⃣ Install with:  
+   ```sh
+   code --install-extension cloudflare-vercel-monitor-1.1.0.vsix

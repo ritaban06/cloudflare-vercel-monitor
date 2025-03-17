@@ -1,0 +1,38 @@
+name: Build and Publish VSIX Extension
+
+on:
+  push:
+    branches:
+      - main  # Adjust based on your branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'  # Adjust based on your Node.js version
+
+      # Step 3: Install dependencies and VSCE
+      - name: Install Dependencies and VSCE
+        run: |
+          npm install -g @vscode/vsce  # Install VSCE globally
+          npm install                  # Install other dependencies
+          npm run build                # Combines the dependencies
+
+      # Step 4: Build VSIX Package
+      - name: Build VSIX Package
+        run: vsce package  # Build the VSIX file
+
+      # Step 5: Publish to VS Code Marketplace
+      - name: Publish to VS Code Marketplace
+        run: vsce publish --pat ${{ secrets.VSCE_PAT }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}  # Use the secret token from GitHub Secrets

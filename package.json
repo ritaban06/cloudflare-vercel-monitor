@@ -4,7 +4,7 @@
   "publisher": "RitabanGhosh",
   "icon": "icon.png",
   "description": "Monitor Cloudflare Pages and Vercel build status inside VS Code.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engines": {
     "vscode": "^1.98.0"
   },
@@ -15,44 +15,45 @@
   "categories": [
     "Other"
   ],
-  "main": "./extension.js",
   "contributes": {
-  "viewsContainers": {
-    "activitybar": [
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "buildStatus",
+          "title": "Build Status",
+          "icon": "media/logs.svg"
+        }
+      ]
+    },
+    "views": {
+      "buildStatus": [
+        {
+          "id": "buildStatusView",
+          "name": "Cloudflare & Vercel Builds",
+          "icon": "media/logs.svg"
+        }
+      ]
+    },
+    "commands": [
       {
-        "id": "buildStatus",
-        "title": "Build Status",
-        "icon": "media/logs.svg"
+        "command": "extension.openBuildStatus",
+        "title": "Refresh Build Status"
       }
     ]
   },
-  "views": {
-    "buildStatus": [
-      {
-        "id": "buildStatusView",
-        "name": "Cloudflare & Vercel Builds",
-        "icon": "media/logs.svg"
-      }
-    ]
-  },
-  "commands": [
-    {
-      "command": "extension.openBuildStatus",
-      "title": "Refresh Build Status"
-    }
-  ]
+"main": "./dist/extension.js",
+"scripts": {
+  "build": "webpack",
+  "package": "vsce package"
 },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "vscode-test"
-  },
   "dependencies": {
     "axios": "^1.5.0"
   },
   "devDependencies": {
-    "@types/vscode": "^1.98.0",
     "@types/node": "20.x",
-    "@vscode/test-cli": "^0.0.10"
+    "@types/vscode": "^1.98.0",
+    "@vscode/test-cli": "^0.0.10",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
   }
 }

@@ -67,3 +67,50 @@
    ```sh
    vsce package
    code --install-extension cloudflare-vercel-monitor-1.0.1.vsix
+
+## **[1.0.2] - Webpack Integration & Packaging Fixes 🚀**  
+
+### 🔹 **New Enhancements**  
+- **🛠️ Webpack Integration**  
+  - Bundled all dependencies, including `axios`, into `dist/extension.js`.  
+  - Ensured `vscode` APIs remain external for compatibility.  
+
+- **📂 Improved Project Structure**  
+  - **Ignored `dist/` in `.gitignore`** to avoid unnecessary Git commits.  
+  - **Kept `dist/` in VSCE packaging** to ensure the extension works after installation.  
+
+- **🔄 Automatic Build Process**  
+  - Updated `package.json` scripts:  
+    ```json
+    "scripts": {
+      "build": "webpack",
+      "package": "vsce package"
+    }
+    ```
+  - Now, simply run:  
+    ```sh
+    npm run build
+    vsce package
+    ```
+
+### 🐛 **Bug Fixes**  
+- **Fixed `Cannot find module 'axios'` Error**  
+  - Previously, VSCE was **not packaging dependencies** correctly.  
+  - Now, Webpack **bundles everything**, ensuring the extension works after installation.  
+
+- **Fixed `.vscodeignore` Issues**  
+  - Removed `dist/` from `.gitignore` but **kept it in VSCE packaging**.  
+  - Ensured only necessary files are included in the `.vsix` package.  
+
+---
+
+## **[Upcoming Features]**  
+✅ **Build Status Notifications**  
+✅ **Customizable API Polling Interval**  
+✅ **Support for More Deployment Platforms (Netlify, GitHub Actions, etc.)**  
+
+🚀 **How to Update**  
+1️⃣ Run `npm run build && vsce package`  
+2️⃣ Install with:  
+   ```sh
+   code --install-extension cloudflare-vercel-monitor-1.0.3.vsix
